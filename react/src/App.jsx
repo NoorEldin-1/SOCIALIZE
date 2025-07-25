@@ -26,10 +26,10 @@ function App() {
       `,
           backgroundSize: "20px 30px",
           WebkitMaskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
+            "radial-gradient(ellipse 70% 60% at 50% 100%, #000 60%, transparent 100%)",
           maskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 0%, #000 60%, transparent 100%)",
-          position: "absolute",
+            "radial-gradient(ellipse 100% 90% at 50% 100%, #000 60%, transparent 100%)",
+          position: "fixed",
           inset: 0,
           zIndex: 0,
         }}

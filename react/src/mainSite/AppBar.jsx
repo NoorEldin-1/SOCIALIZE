@@ -5,20 +5,25 @@ import {
   Menu,
   MenuItem,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch } from "react-redux";
 import { showDialog } from "../features/dialogSlice";
+import { useNavigate } from "react-router";
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
-const AppBar = () => {
+const AppBar = ({ setValue }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const handleClose = () => setAnchorEl(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const theme = useTheme();
 
   const MainMenu = useMemo(() => {
     return (
@@ -29,7 +34,8 @@ const AppBar = () => {
         slotProps={{
           list: {
             sx: {
-              minWidth: "200px",
+              minWidth: "225px",
+              textTransform: "capitalize",
             },
           },
         }}
@@ -44,7 +50,11 @@ const AppBar = () => {
         }}
       >
         <MenuItem
-          onClick={handleClose}
+          onClick={() => {
+            navigate("/profile");
+            handleClose();
+            setValue(null);
+          }}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -55,6 +65,20 @@ const AppBar = () => {
           <AccountCircleIcon />
         </MenuItem>
         <MenuItem
+          onClick={() => {
+            handleClose();
+            dispatch(showDialog("addPost"));
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <Typography flexGrow={1}>add post</Typography>
+          <PostAddIcon />
+        </MenuItem>
+        <MenuItem
           onClick={handleClose}
           sx={{
             display: "flex",
@@ -62,8 +86,8 @@ const AppBar = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>edit account</Typography>
-          <EditIcon />
+          <Typography flexGrow={1}>account settings</Typography>
+          <ManageAccountsIcon />
         </MenuItem>
         <MenuItem
           onClick={() => dispatch(showDialog("delete account"))}
@@ -89,7 +113,7 @@ const AppBar = () => {
         </MenuItem>
       </Menu>
     );
-  }, [anchorEl, dispatch, open]);
+  }, [anchorEl, dispatch, navigate, open, setValue]);
 
   const element = useMemo(() => {
     return (
@@ -100,6 +124,15 @@ const AppBar = () => {
           alignItems: "center",
           justifyContent: "space-between",
           p: 2,
+          position: "sticky",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10000,
+          backgroundColor: window.matchMedia("(prefers-color-scheme: dark)")
+            .matches
+            ? "#3c3c3c"
+            : "#edf2fa",
         }}
       >
         <img
@@ -124,14 +157,19 @@ const AppBar = () => {
           <Avatar
             alt="guest"
             src="../../public/guest.png"
-            sx={{ cursor: "pointer", width: "40px", height: "40px" }}
+            sx={{
+              cursor: "pointer",
+              width: "40px",
+              height: "40px",
+              border: `2px solid ${theme.palette.primary.main}`,
+            }}
             onClick={(e) => setAnchorEl(e.currentTarget)}
           />
         </ButtonBase>
         {MainMenu}
       </Box>
     );
-  }, [MainMenu]);
+  }, [MainMenu, theme.palette.primary.main]);
 
   return element;
 };
