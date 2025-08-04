@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
-import { backendUrl } from "../main";
+import { backendUrl, fileUrl } from "../main";
 
 export const signup = createAsyncThunk("auth/signup", async (info) => {
   try {
@@ -47,17 +47,86 @@ export const deleteAccount = createAsyncThunk(
   }
 );
 
+export const editAccount = createAsyncThunk(
+  "auth/editAccount",
+  async (info, { rejectWithValue }) => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      };
+
+      let data;
+      if (info.profileImage || info.coverImage) {
+        const formData = new FormData();
+
+        formData.append("name", info.name);
+        formData.append("showLikes", info.showLikes === "true" ? "1" : "0");
+        formData.append("showShares", info.showShares === "true" ? "1" : "0");
+        formData.append(
+          "showFollowers",
+          info.showFollowers === "true" ? "1" : "0"
+        );
+        formData.append(
+          "showFollowing",
+          info.showFollowing === "true" ? "1" : "0"
+        );
+
+        if (info.profileImage) {
+          formData.append("profileImage", info.profileImage);
+        }
+        if (info.coverImage) {
+          formData.append("coverImage", info.coverImage);
+        }
+
+        data = formData;
+
+        config.headers["Content-Type"] = "multipart/form-data";
+      } else {
+        data = {
+          name: info.name,
+          showLikes: info.showLikes === "true" ? "1" : "0",
+          showShares: info.showShares === "true" ? "1" : "0",
+          showFollowers: info.showFollowers === "true" ? "1" : "0",
+          showFollowing: info.showFollowing === "true" ? "1" : "0",
+        };
+      }
+
+      const res = await axios.post(`${backendUrl}editAccount`, data, config);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getProfile = createAsyncThunk(
+  "auth/getProfile",
+  async (username) => {
+    const res = await axios.get(`${backendUrl}getProfile/${username}`, {
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+      },
+    });
+    return res.data;
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     user: {},
+    profile: {},
     token: {},
-    signupLoading: false,
-    loginLoading: false,
-    logoutLoading: false,
-    deleteLoading: false,
+    signupLoading: "",
+    loginLoading: "",
+    logoutLoading: "",
+    deleteLoading: "",
+    editLoading: "",
     signupError: "",
     loginError: "",
+    profileLoading: "",
   },
   reducers: {
     reset: (state) => {
@@ -65,10 +134,12 @@ const authSlice = createSlice({
       state.token = {};
       state.signupError = "";
       state.loginError = "";
-      state.signupLoading = false;
-      state.loginLoading = false;
-      state.logoutLoading = false;
-      state.deleteLoading = false;
+      state.signupLoading = "";
+      state.loginLoading = "";
+      state.logoutLoading = "";
+      state.deleteLoading = "";
+      state.editLoading = "";
+      state.profileLoading = "";
     },
   },
   extraReducers: (builder) => {
@@ -87,6 +158,23 @@ const authSlice = createSlice({
           window.localStorage.setItem("token", action.payload.token);
           window.localStorage.setItem("name", action.payload.user.name);
           window.localStorage.setItem("username", action.payload.user.username);
+          window.localStorage.setItem("userId", action.payload.user.id);
+          window.localStorage.setItem(
+            "showLikes",
+            Boolean(action.payload.user.showLikes)
+          );
+          window.localStorage.setItem(
+            "showShares",
+            Boolean(action.payload.user.showShares)
+          );
+          window.localStorage.setItem(
+            "showFollowers",
+            Boolean(action.payload.user.showFollowers)
+          );
+          window.localStorage.setItem(
+            "showFollowing",
+            Boolean(action.payload.user.showFollowing)
+          );
 
           window.location.href = "/";
         }
@@ -105,6 +193,36 @@ const authSlice = createSlice({
           window.localStorage.setItem("token", action.payload.token);
           window.localStorage.setItem("name", action.payload.user.name);
           window.localStorage.setItem("username", action.payload.user.username);
+          window.localStorage.setItem("userId", action.payload.user.id);
+          window.localStorage.setItem(
+            "showLikes",
+            Boolean(action.payload.user.showLikes)
+          );
+          window.localStorage.setItem(
+            "showShares",
+            Boolean(action.payload.user.showShares)
+          );
+          window.localStorage.setItem(
+            "showFollowers",
+            Boolean(action.payload.user.showFollowers)
+          );
+          window.localStorage.setItem(
+            "showFollowing",
+            Boolean(action.payload.user.showFollowing)
+          );
+
+          if (action.payload.user.profileImage) {
+            window.localStorage.setItem(
+              "profileImage",
+              `${fileUrl}${action.payload.user.profileImage}`
+            );
+          }
+          if (action.payload.user.coverImage) {
+            window.localStorage.setItem(
+              "coverImage",
+              `${fileUrl}${action.payload.user.coverImage}`
+            );
+          }
 
           window.location.href = "/";
         }
@@ -113,24 +231,80 @@ const authSlice = createSlice({
         state.logoutLoading = true;
       })
       .addCase(logout.fulfilled, () => {
+        window.localStorage.clear();
         reset();
-
-        window.localStorage.removeItem("token");
-        window.localStorage.removeItem("name");
-        window.localStorage.removeItem("username");
-
         window.location.href = "/";
       })
       .addCase(deleteAccount.pending, (state) => {
         state.deleteLoading = true;
       })
       .addCase(deleteAccount.fulfilled, () => {
+        window.localStorage.clear();
         reset();
+        window.location.href = "/";
+      })
+      .addCase(editAccount.pending, (state) => {
+        state.editLoading = true;
+      })
+      .addCase(editAccount.fulfilled, (state, action) => {
+        state.editLoading = false;
 
-        window.localStorage.removeItem("token");
-        window.localStorage.removeItem("name");
-        window.localStorage.removeItem("username");
+        state.user = action.payload.user;
+        window.localStorage.setItem("name", action.payload.user.name);
+        window.localStorage.setItem("showLikes", action.payload.user.showLikes);
+        window.localStorage.setItem(
+          "showShares",
+          action.payload.user.showShares
+        );
+        window.localStorage.setItem(
+          "showFollowers",
+          action.payload.user.showFollowers
+        );
+        window.localStorage.setItem(
+          "showFollowing",
+          action.payload.user.showFollowing
+        );
 
+        if (action.payload.user.profileImage) {
+          window.localStorage.setItem(
+            "profileImage",
+            `${fileUrl}${action.payload.user.profileImage}`
+          );
+        } else {
+          window.localStorage.removeItem("profileImage");
+        }
+        if (action.payload.user.coverImage) {
+          window.localStorage.setItem(
+            "coverImage",
+            `${fileUrl}${action.payload.user.coverImage}`
+          );
+        } else {
+          window.localStorage.removeItem("coverImage");
+        }
+        window.location.href = "/profile";
+      })
+      .addCase(editAccount.rejected, (state, action) => {
+        state.editLoading = false;
+        state.editError = action.payload;
+      })
+      .addCase(getProfile.pending, (state) => {
+        state.profileLoading = "true";
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.profileLoading = "false";
+
+        let profile = action.payload.user;
+
+        if (profile.profileImage) {
+          profile.profileImage = `${fileUrl}${profile.profileImage}`;
+        }
+        if (profile.coverImage) {
+          profile.coverImage = `${fileUrl}${profile.coverImage}`;
+        }
+
+        state.profile = profile;
+      })
+      .addCase(getProfile.rejected, () => {
         window.location.href = "/";
       });
   },

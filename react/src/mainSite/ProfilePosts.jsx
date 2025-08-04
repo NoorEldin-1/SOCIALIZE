@@ -1,72 +1,117 @@
-import { Box, ButtonBase, Typography, useTheme } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import {
+  CircularProgress,
+  Typography,
+  useTheme,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { showDialog } from "../features/dialogSlice";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import ShareIcon from "@mui/icons-material/Share";
-import ModeCommentIcon from "@mui/icons-material/ModeComment";
-import Button from "@mui/material/Button";
+import PostCard from "./PostCard";
 
 const ProfilePosts = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [list, setList] = useState([]);
   const [liked, setLiked] = useState(false);
+  const posts = useSelector((state) => state.post.profilePosts);
+  const profilePostsLoading = useSelector(
+    (state) => state.post.profilePostsLoading
+  );
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const cardMenu = useMemo(() => {
+    return (
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => setAnchorEl(null)}
+        slotProps={{
+          list: {
+            sx: {
+              minWidth: "200px",
+              textTransform: "capitalize",
+            },
+          },
+        }}
+        sx={{ mt: 1 }}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            setAnchorEl(null);
+            dispatch(showDialog("delete post"));
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <Typography flexGrow={1}>delete post</Typography>
+          <DeleteForeverIcon />
+        </MenuItem>
+      </Menu>
+    );
+  }, [anchorEl, dispatch, open]);
 
   useEffect(() => {
-    setList(
-      Array.from({ length: 20 }).map((_, i) => {
-        return (
-          <Card sx={{ width: 300 }} key={i}>
-            <CardMedia
-              sx={{ height: 140, cursor: "pointer" }}
-              image="https://i.pinimg.com/736x/31/c4/27/31c427e803501f8ec681153b85e789d5.jpg"
-              onClick={() => dispatch(showDialog("post"))}
+    if (posts.length > 0) {
+      setList(
+        posts.map((e) => {
+          return (
+            <PostCard
+              key={e.id}
+              e={e}
+              setAnchorEl={setAnchorEl}
+              place={"profilePosts"}
+              liked={liked}
+              setLiked={setLiked}
             />
-            <CardContent>
-              <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica
-              </Typography>
-            </CardContent>
-            <CardActions
-              sx={{ display: "flex", justifyContent: "space-between" }}
-            >
-              <Button
-                size="small"
-                startIcon={liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                onClick={() => setLiked(!liked)}
-              >
-                120
-              </Button>
-              <Button
-                size="small"
-                startIcon={<ShareIcon />}
-                onClick={() => dispatch(showDialog("share"))}
-              >
-                10
-              </Button>
-              <Button
-                size="small"
-                startIcon={<ModeCommentIcon />}
-                onClick={() => dispatch(showDialog("post"))}
-              >
-                10000
-              </Button>
-            </CardActions>
-          </Card>
-        );
-      })
-    );
-  }, [dispatch, liked, theme.palette.primary.main]);
+          );
+        })
+      );
+    }
+  }, [liked, posts]);
 
-  return <>{list}</>;
+  const element = useMemo(() => {
+    return (
+      <>
+        {profilePostsLoading === "true" ? (
+          <CircularProgress />
+        ) : posts.length > 0 ? (
+          list
+        ) : (
+          <Typography
+            variant="h6"
+            color={theme.palette.getContrastText(
+              theme.palette.background.default
+            )}
+            py={1}
+            px={5}
+            bgcolor={theme.palette.background.default}
+            borderRadius={50}
+            textTransform={"uppercase"}
+          >
+            no posts
+          </Typography>
+        )}
+        {cardMenu}
+      </>
+    );
+  }, [cardMenu, list, posts.length, profilePostsLoading, theme.palette]);
+
+  return element;
 };
 
 export default ProfilePosts;

@@ -16,6 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('username')->unique();
             $table->string('password');
+            $table->string('profileImage')->nullable();
+            $table->string('coverImage')->nullable();
+            $table->boolean('showLikes')->default(true);
+            $table->boolean('showShares')->default(true);
+            $table->boolean('showFollowers')->default(true);
+            $table->boolean('showFollowing')->default(true);
             $table->timestamps();
         });
 

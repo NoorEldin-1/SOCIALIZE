@@ -2,27 +2,27 @@ import {
   Avatar,
   Box,
   ButtonBase,
+  IconButton,
   Menu,
   MenuItem,
   Typography,
   useTheme,
 } from "@mui/material";
-import { useMemo, useState } from "react";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useCallback, useMemo, useState } from "react";
 import LogoutIcon from "@mui/icons-material/Logout";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch } from "react-redux";
 import { showDialog } from "../features/dialogSlice";
-import { useNavigate } from "react-router";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import ChatIcon from "@mui/icons-material/Chat";
 
-const AppBar = ({ setValue }) => {
+const AppBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClose = () => setAnchorEl(null);
+  const handleClose = useCallback(() => setAnchorEl(null), []);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const theme = useTheme();
 
   const MainMenu = useMemo(() => {
@@ -36,6 +36,8 @@ const AppBar = ({ setValue }) => {
             sx: {
               minWidth: "225px",
               textTransform: "capitalize",
+              background: theme.palette.primary.dark,
+              color: theme.palette.primary.light,
             },
           },
         }}
@@ -51,21 +53,6 @@ const AppBar = ({ setValue }) => {
       >
         <MenuItem
           onClick={() => {
-            navigate("/profile");
-            handleClose();
-            setValue(null);
-          }}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
-          <Typography flexGrow={1}>profile</Typography>
-          <AccountCircleIcon />
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
             handleClose();
             dispatch(showDialog("addPost"));
           }}
@@ -79,7 +66,24 @@ const AppBar = ({ setValue }) => {
           <PostAddIcon />
         </MenuItem>
         <MenuItem
-          onClick={handleClose}
+          onClick={() => {
+            handleClose();
+            dispatch(showDialog("accountSettings"));
+          }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <Typography flexGrow={1}>chats</Typography>
+          <ChatIcon />
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            dispatch(showDialog("accountSettings"));
+          }}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -113,7 +117,14 @@ const AppBar = ({ setValue }) => {
         </MenuItem>
       </Menu>
     );
-  }, [anchorEl, dispatch, navigate, open, setValue]);
+  }, [
+    anchorEl,
+    dispatch,
+    handleClose,
+    open,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+  ]);
 
   const element = useMemo(() => {
     return (
@@ -129,47 +140,56 @@ const AppBar = ({ setValue }) => {
           left: 0,
           right: 0,
           zIndex: 10000,
-          backgroundColor: window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "#3c3c3c"
-            : "#edf2fa",
+          background: theme.palette.primary.dark,
         }}
       >
-        <img
-          src="../../public/logo.png"
-          alt="logo"
-          style={{
-            width: "150px",
-          }}
-        />
-        <ButtonBase
-          component="label"
-          role={undefined}
-          tabIndex={-1}
-          sx={{
-            borderRadius: "40px",
-            "&:has(:focus-visible)": {
-              outline: "2px solid",
-              outlineOffset: "2px",
-            },
-          }}
+        <Typography
+          align="center"
+          variant="h6"
+          textTransform={"uppercase"}
+          color={theme.palette.primary.main}
+          fontWeight={"bold"}
+          letterSpacing={"2px"}
         >
-          <Avatar
-            alt="guest"
-            src="../../public/guest.png"
+          socialize.
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <IconButton size="large" color="primary">
+            <NotificationsIcon />
+          </IconButton>
+          <ButtonBase
+            component="label"
+            role={undefined}
+            tabIndex={-1}
             sx={{
-              cursor: "pointer",
-              width: "40px",
-              height: "40px",
-              border: `2px solid ${theme.palette.primary.main}`,
+              borderRadius: "40px",
+              "&:has(:focus-visible)": {
+                outline: "2px solid",
+                outlineOffset: "2px",
+              },
             }}
-            onClick={(e) => setAnchorEl(e.currentTarget)}
-          />
-        </ButtonBase>
+          >
+            <Avatar
+              alt="guest"
+              src={
+                window.localStorage.getItem("profileImage")
+                  ? window.localStorage.getItem("profileImage")
+                  : "../../public/guest.png"
+              }
+              sx={{
+                cursor: "pointer",
+                width: "40px",
+                height: "40px",
+                border: `2px solid ${theme.palette.primary.main}`,
+              }}
+              onClick={(e) => setAnchorEl(e.currentTarget)}
+            />
+          </ButtonBase>
+        </Box>
         {MainMenu}
       </Box>
     );
-  }, [MainMenu, theme.palette.primary.main]);
+  }, [MainMenu, theme.palette.primary.dark, theme.palette.primary.main]);
 
   return element;
 };

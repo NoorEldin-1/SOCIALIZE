@@ -38,6 +38,7 @@ const Post = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [liked, setLiked] = useState(false);
+  const postInfo = useSelector((state) => state.post.postInfo);
   return (
     <Dialog
       fullScreen
@@ -129,14 +130,12 @@ const Post = () => {
             maxWidth: "100%",
             maxHeight: "100%",
           }}
-          src="https://i.pinimg.com/736x/b9/08/76/b90876a978042e928247088dab935d48.jpg"
+          src={postInfo.image}
           alt="post"
         />
       </Box>
       <Typography p={2} sx={{ wordBreak: "break-word", maxWidth: "600px" }}>
-        Lizards are a widespread group of squamate reptiles, with over 6,000
-        species, ranging across all continents except
-        Antarcticaaaaaaaaaaaaaaaaaaaaaaaaaadddddddddddddddddzzzzzzzzzzzzzzzddddddddddddddddddxxxxxxxxxxxxxxxxxxxxxxzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+        {postInfo.content}
       </Typography>
       <Box display="flex" gap={1} p={2}>
         <Button

@@ -1,25 +1,43 @@
-import { Box, Button, Tab, Tabs, Typography, useTheme } from "@mui/material";
-import { useState } from "react";
-import ChatIcon from "@mui/icons-material/Chat";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
+import { Box, Tab, Tabs, Typography, useTheme } from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ProfilePosts from "./ProfilePosts";
 import ProfileShares from "./ProfileShares";
 import ProfileLikes from "./ProfileLikes";
 import ProfileFollowing from "./ProfileFollowing";
 import ProfileFollowers from "./ProfileFollowers";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router";
+import { profilePosts } from "../features/postSlice";
 
 const Profile = () => {
+  const { username } = useParams();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [value, setValue] = useState("posts");
-  const [toggleFollow, setToggleFollow] = useState(false);
-  const handleChange = (event, newValue) => setValue(newValue);
+  const dispatch = useDispatch();
+  const handleChange = useCallback((_, newValue) => setValue(newValue), []);
 
-  return (
-    <Box sx={{ py: 2 }}>
+  useEffect(() => {
+    if (username) {
+      if (username === window.localStorage.getItem("username")) {
+        navigate("/");
+      }
+    }
+  }, [navigate, username]);
+
+  useEffect(() => {
+    dispatch(profilePosts(window.localStorage.getItem("username")));
+  }, [dispatch]);
+
+  const top = useMemo(() => {
+    return (
       <Box display="flex" flexDirection="column" alignItems="center">
         <img
-          src="https://i.pinimg.com/736x/ad/a7/72/ada772b26a0e6dded8523d3a596fc569.jpg"
+          src={
+            window.localStorage.getItem("coverImage")
+              ? window.localStorage.getItem("coverImage")
+              : "../../public/cover.jpg"
+          }
           alt="cover photo"
           style={{
             width: "100%",
@@ -27,10 +45,15 @@ const Profile = () => {
             overflow: "hidden",
             borderRadius: 25,
             objectFit: "cover",
+            border: `4px solid ${theme.palette.primary.main}`,
           }}
         />
         <img
-          src="../../public/guest.png"
+          src={
+            window.localStorage.getItem("profileImage")
+              ? window.localStorage.getItem("profileImage")
+              : "../../public/guest.png"
+          }
           alt="profile photo"
           style={{
             display: "block",
@@ -46,60 +69,36 @@ const Profile = () => {
           }}
         />
       </Box>
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        mt={2}
-        gap={1}
-      >
-        <Typography
-          variant="h6"
-          color={theme.palette.getContrastText(
-            theme.palette.background.default
-          )}
-          py={1}
-          px={5}
-          bgcolor={theme.palette.background.default}
-          borderRadius={50}
-        >
-          full name
+    );
+  }, [
+    theme.palette.background.default,
+    theme.palette.primary.main,
+    theme.shadows,
+  ]);
+
+  const info = useMemo(() => {
+    return (
+      <Box display="flex" flexDirection="column" alignItems="center" mt={2}>
+        <Typography variant="h6" color={theme.palette.primary.light}>
+          {window.localStorage.getItem("name")}
         </Typography>
         <Typography
           variant="caption"
-          color="primary"
-          p={1}
-          bgcolor={theme.palette.background.default}
-          borderRadius={50}
+          color={theme.palette.primary.light}
           fontWeight={"bold"}
         >
-          @username
+          @{window.localStorage.getItem("username")}
         </Typography>
       </Box>
-      <Box display="flex" gap={1} mt={2} justifyContent="center">
-        <Button
-          onClick={() => setToggleFollow(!toggleFollow)}
-          variant="contained"
-          size="small"
-          color="primary"
-          endIcon={toggleFollow ? <PersonRemoveIcon /> : <PersonAddIcon />}
-          sx={{ borderRadius: 50 }}
-        >
-          {toggleFollow ? "un follow" : "follow"}
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          endIcon={<ChatIcon />}
-          sx={{ borderRadius: 50 }}
-        >
-          chat
-        </Button>
-      </Box>
+    );
+  }, [theme.palette]);
+
+  const tabs = useMemo(() => {
+    return (
       <Box
         sx={{
           maxWidth: "400px",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.secondary.light,
           borderRadius: 10,
           overflow: "hidden",
           boxShadow: 10,
@@ -126,6 +125,16 @@ const Profile = () => {
           <Tab value="following" label="following" />
         </Tabs>
       </Box>
+    );
+  }, [
+    handleChange,
+    theme.palette.primary.main,
+    theme.palette.secondary.light,
+    value,
+  ]);
+
+  const profileContent = useMemo(() => {
+    return (
       <Box
         sx={{
           display: "flex",
@@ -143,8 +152,21 @@ const Profile = () => {
         {value === "followers" && <ProfileFollowers />}
         {value === "following" && <ProfileFollowing />}
       </Box>
-    </Box>
-  );
+    );
+  }, [value]);
+
+  const element = useMemo(() => {
+    return (
+      <Box sx={{ py: 2 }}>
+        {top}
+        {info}
+        {tabs}
+        {profileContent}
+      </Box>
+    );
+  }, [info, profileContent, tabs, top]);
+
+  return element;
 };
 
 export default Profile;

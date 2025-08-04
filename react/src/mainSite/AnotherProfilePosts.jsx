@@ -1,14 +1,18 @@
-import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
+import { useTheme } from "@emotion/react";
+import { CircularProgress, Typography } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import PostCard from "./PostCard";
 
-const ForYou = () => {
+const AnotherProfilePosts = () => {
   const theme = useTheme();
-  const posts = useSelector((state) => state.post.forYouPosts);
-  const loading = useSelector((state) => state.post.forYouPostsLoading);
+  //   const dispatch = useDispatch();
   const [list, setList] = useState([]);
   const [liked, setLiked] = useState(false);
+  const posts = useSelector((state) => state.post.profilePosts);
+  const profilePostsLoading = useSelector(
+    (state) => state.post.profilePostsLoading
+  );
 
   useEffect(() => {
     if (posts.length > 0) {
@@ -17,8 +21,8 @@ const ForYou = () => {
           return (
             <PostCard
               key={e.id}
-              place={"forYou"}
               e={e}
+              place={"anotherProfilePosts"}
               liked={liked}
               setLiked={setLiked}
             />
@@ -30,21 +34,11 @@ const ForYou = () => {
 
   const element = useMemo(() => {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          gap: 2,
-          alignItems: "center",
-          py: 10,
-        }}
-      >
-        {loading === "true" ? (
+      <>
+        {profilePostsLoading === "true" ? (
           <CircularProgress />
         ) : posts.length > 0 ? (
-          <>{list}</>
+          list
         ) : (
           <Typography
             variant="h6"
@@ -57,14 +51,14 @@ const ForYou = () => {
             borderRadius={50}
             textTransform={"uppercase"}
           >
-            No posts
+            no posts
           </Typography>
         )}
-      </Box>
+      </>
     );
-  }, [list, loading, posts.length, theme.palette]);
+  }, [list, posts.length, profilePostsLoading, theme.palette]);
 
   return element;
 };
 
-export default ForYou;
+export default AnotherProfilePosts;

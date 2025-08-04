@@ -3,10 +3,13 @@ import { useEffect, useMemo } from "react";
 import ViewWeekIcon from "@mui/icons-material/ViewWeek";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
+import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router";
+import { useTheme } from "@mui/material/styles";
 
 const Navigation = ({ value, setValue }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   useEffect(() => {
     if (window.location.pathname === "/") setValue(1);
@@ -32,24 +35,33 @@ const Navigation = ({ value, setValue }) => {
           onChange={(e, newValue) => {
             const pageValue = e.currentTarget.children[1].textContent;
             setValue(newValue);
-            if (pageValue === "community") navigate("/");
-            else navigate(`/${pageValue.split(" ").join("-").toLowerCase()}`);
+            if (pageValue === "profile") navigate("/");
+            if (pageValue === "following") navigate("/following");
+            if (pageValue === "for you") navigate("/for-you");
           }}
           sx={{
             "& .MuiBottomNavigationAction-label": {
               textTransform: "capitalize",
+              color: theme.palette.primary.light,
             },
             borderRadius: 10,
             boxShadow: 20,
+            bgcolor: theme.palette.primary.dark,
           }}
         >
           <BottomNavigationAction label="for you" icon={<ViewWeekIcon />} />
-          <BottomNavigationAction label="community" icon={<FavoriteIcon />} />
+          <BottomNavigationAction label="profile" icon={<PersonIcon />} />
           <BottomNavigationAction label="following" icon={<Diversity1Icon />} />
         </BottomNavigation>
       </Box>
     );
-  }, [navigate, setValue, value]);
+  }, [
+    navigate,
+    setValue,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+    value,
+  ]);
 
   return element;
 };

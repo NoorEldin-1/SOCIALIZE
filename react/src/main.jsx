@@ -7,6 +7,7 @@ import { store } from "./store.js";
 import { createTheme, ThemeProvider } from "@mui/material";
 
 export const backendUrl = "http://localhost:8000/api/";
+export const fileUrl = "http://localhost:8000";
 
 if (window.navigator.language === "ar") {
   document.dir = "rtl";
@@ -20,11 +21,19 @@ const theme = createTheme({
     fontFamily: "Rubik",
   },
   palette: {
-    mode: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
     primary: {
-      main: "#0976be",
+      main: "#285BF6",
+      light: window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "#FEFEFE"
+        : "#525252",
+      dark: window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "#525252"
+        : "#FEFEFE",
+    },
+    secondary: {
+      main: "#285BF6",
+      light: "#FEFEFE",
+      dark: "#525252",
     },
   },
 });

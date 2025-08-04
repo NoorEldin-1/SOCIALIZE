@@ -112,6 +112,8 @@ const Signup = () => {
   const fullNameElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
+        fullWidth
         slotProps={{ input: { endAdornment: <PersonOutlineIcon /> } }}
         onChange={handleFullName}
         color={validate.fullName}
@@ -131,6 +133,8 @@ const Signup = () => {
   const userNameElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
+        fullWidth
         slotProps={{ input: { endAdornment: <AccountCircleIcon /> } }}
         onChange={handleUsername}
         color={validate.username}
@@ -160,6 +164,8 @@ const Signup = () => {
   const passwordElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
+        fullWidth
         type={visiblePassword ? "text" : "password"}
         onChange={handlePassword}
         color={validate.password}
@@ -194,6 +200,8 @@ const Signup = () => {
   const confirmPasswordElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
+        fullWidth
         type={visibleConfirmPassword ? "text" : "password"}
         onChange={handleConfirmPassword}
         color={validate.confirmPassword}
@@ -248,37 +256,57 @@ const Signup = () => {
             flexDirection: "column",
             gap: "15px",
             p: 2,
-            bgcolor: theme.palette.background.default,
+            bgcolor: theme.palette.secondary.light,
             borderRadius: "10px",
-            width: { xs: "300px", sm: "400px" },
+            width: { xs: "300px", sm: "600px" },
           }}
         >
           <Typography
             align="center"
             variant="h6"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.secondary.dark}
             textTransform={"uppercase"}
           >
             signup
           </Typography>
-          {fullNameElement}
-          {userNameElement}
-          {passwordElement}
-          {confirmPasswordElement}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: "15px",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            {fullNameElement}
+            {userNameElement}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: "15px",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            {passwordElement}
+            {confirmPasswordElement}
+          </Box>
           {loading ? (
             <CircularProgress size={20} sx={{ display: "block", mx: "auto" }} />
           ) : (
-            <Button variant="contained" onClick={handleSignup}>
+            <Button
+              variant="contained"
+              onClick={handleSignup}
+              sx={{ ":hover": { bgcolor: theme.palette.primary.main } }}
+            >
               signup
             </Button>
           )}
           <Typography
             variant="caption"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.secondary.dark}
             sx={{
               cursor: "pointer",
               "&:hover": { textDecoration: "underline" },

@@ -68,6 +68,7 @@ const Login = () => {
   const userNameElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
         slotProps={{ input: { endAdornment: <AccountCircleIcon /> } }}
         type="text"
         onChange={handleUsername}
@@ -88,6 +89,7 @@ const Login = () => {
   const passwordElement = useMemo(() => {
     return (
       <TextField
+        autoComplete="off"
         slotProps={{
           input: {
             endAdornment: visible ? (
@@ -137,7 +139,7 @@ const Login = () => {
             flexDirection: "column",
             gap: "15px",
             p: 2,
-            bgcolor: theme.palette.background.default,
+            bgcolor: theme.palette.secondary.light,
             borderRadius: "10px",
             width: { xs: "300px", sm: "400px" },
           }}
@@ -145,9 +147,7 @@ const Login = () => {
           <Typography
             align="center"
             variant="h6"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.secondary.dark}
             textTransform={"uppercase"}
           >
             login
@@ -168,15 +168,17 @@ const Login = () => {
           {loading ? (
             <CircularProgress size={20} sx={{ display: "block", mx: "auto" }} />
           ) : (
-            <Button variant="contained" onClick={handleLogin}>
+            <Button
+              variant="contained"
+              onClick={handleLogin}
+              sx={{ ":hover": { bgcolor: theme.palette.primary.main } }}
+            >
               login
             </Button>
           )}
           <Typography
             variant="caption"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.secondary.dark}
             sx={{
               cursor: "pointer",
               "&:hover": { textDecoration: "underline" },
