@@ -64,6 +64,20 @@ This project was built using a powerful and modern stack of technologies:
 
 ---
 
+## 🎬 Demo Video
+
+Check out a quick demo of SOCIALIZE in action:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=uW6ezChzl7Q" target="_blank">
+    <img src="https://img.youtube.com/vi/uW6ezChzl7Q/hqdefault.jpg" alt="SOCIALIZE Demo Video" width="480" style="border-radius: 12px; box-shadow: 0 2px 8px #0002;"/>
+  </a>
+</p>
+
+[Watch on YouTube](https://www.youtube.com/watch?v=uW6ezChzl7Q)
+
+---
+
 ## Getting Started
 
 ### 1. Prerequisites
