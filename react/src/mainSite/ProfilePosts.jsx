@@ -5,13 +5,17 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { showDialog } from "../features/dialogSlice";
 import PostCard from "./PostCard";
+import { nextProfilePosts, profilePosts } from "../features/postSlice";
+import { useParams } from "react-router";
+import { translate } from "../main";
 
-const ProfilePosts = () => {
+const ProfilePosts = ({ place }) => {
+  const { username } = useParams();
   const theme = useTheme();
   const dispatch = useDispatch();
   const [list, setList] = useState([]);
@@ -22,6 +26,34 @@ const ProfilePosts = () => {
   );
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const nextPage = useSelector((state) => state.post.nextProfilePosts);
+  const paginateLoading = useSelector((state) => state.post.paginateLoading);
+
+
+
+  useEffect(() => {
+    if (username && username !== window.localStorage.getItem("username")) {
+      dispatch(profilePosts(username));
+    } else {
+      dispatch(profilePosts(window.localStorage.getItem("username")));
+    }
+  }, [dispatch, username]);
+
+  const handlePaginate = useCallback(() => {
+    if (nextPage && paginateLoading === "false") {
+      if (
+        Math.ceil(window.scrollY + document.documentElement.clientHeight) >=
+        document.documentElement.scrollHeight
+      ) {
+        dispatch(nextProfilePosts(nextPage));
+      }
+    }
+  }, [dispatch, nextPage, paginateLoading]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handlePaginate);
+    return () => window.removeEventListener("scroll", handlePaginate);
+  }, [handlePaginate]);
 
   const cardMenu = useMemo(() => {
     return (
@@ -34,6 +66,8 @@ const ProfilePosts = () => {
             sx: {
               minWidth: "200px",
               textTransform: "capitalize",
+              backgroundColor: theme.palette.primary.dark,
+              color: theme.palette.primary.light,
             },
           },
         }}
@@ -58,15 +92,23 @@ const ProfilePosts = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>delete post</Typography>
-          <DeleteForeverIcon />
+          <Typography flexGrow={1}>{translate("delete post")}</Typography>
+          <DeleteForeverIcon sx={{ color: theme.palette.primary.light }} />
         </MenuItem>
       </Menu>
     );
-  }, [anchorEl, dispatch, open]);
+  }, [
+    anchorEl,
+    dispatch,
+    open,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+  ]);
 
   useEffect(() => {
-    if (posts.length > 0) {
+
+
+    if (posts.length > 0 && profilePostsLoading === "false") {
       setList(
         posts.map((e) => {
           return (
@@ -74,7 +116,7 @@ const ProfilePosts = () => {
               key={e.id}
               e={e}
               setAnchorEl={setAnchorEl}
-              place={"profilePosts"}
+              place={place}
               liked={liked}
               setLiked={setLiked}
             />
@@ -82,7 +124,7 @@ const ProfilePosts = () => {
         })
       );
     }
-  }, [liked, posts]);
+  }, [liked, place, posts, profilePostsLoading]);
 
   const element = useMemo(() => {
     return (
@@ -94,22 +136,27 @@ const ProfilePosts = () => {
         ) : (
           <Typography
             variant="h6"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.primary.dark}
             py={1}
             px={5}
-            bgcolor={theme.palette.background.default}
+            bgcolor={theme.palette.primary.light}
             borderRadius={50}
             textTransform={"uppercase"}
           >
-            no posts
+            {translate("no posts")}
           </Typography>
         )}
         {cardMenu}
       </>
     );
-  }, [cardMenu, list, posts.length, profilePostsLoading, theme.palette]);
+  }, [
+    cardMenu,
+    list,
+    posts.length,
+    profilePostsLoading,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+  ]);
 
   return element;
 };

@@ -6,6 +6,7 @@ import Diversity1Icon from "@mui/icons-material/Diversity1";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router";
 import { useTheme } from "@mui/material/styles";
+import { translate } from "../main";
 
 const Navigation = ({ value, setValue }) => {
   const navigate = useNavigate();
@@ -35,9 +36,11 @@ const Navigation = ({ value, setValue }) => {
           onChange={(e, newValue) => {
             const pageValue = e.currentTarget.children[1].textContent;
             setValue(newValue);
-            if (pageValue === "profile") navigate("/");
-            if (pageValue === "following") navigate("/following");
-            if (pageValue === "for you") navigate("/for-you");
+            if (pageValue === "profile" || pageValue === "صفحتك") navigate("/");
+            if (pageValue === "following" || pageValue === "المتابعين")
+              navigate("/following");
+            if (pageValue === "for you" || pageValue === "تصفح")
+              navigate("/for-you");
           }}
           sx={{
             "& .MuiBottomNavigationAction-label": {
@@ -49,9 +52,18 @@ const Navigation = ({ value, setValue }) => {
             bgcolor: theme.palette.primary.dark,
           }}
         >
-          <BottomNavigationAction label="for you" icon={<ViewWeekIcon />} />
-          <BottomNavigationAction label="profile" icon={<PersonIcon />} />
-          <BottomNavigationAction label="following" icon={<Diversity1Icon />} />
+          <BottomNavigationAction
+            label={translate("for you")}
+            icon={<ViewWeekIcon />}
+          />
+          <BottomNavigationAction
+            label={translate("profile")}
+            icon={<PersonIcon />}
+          />
+          <BottomNavigationAction
+            label={translate("following")}
+            icon={<Diversity1Icon />}
+          />
         </BottomNavigation>
       </Box>
     );

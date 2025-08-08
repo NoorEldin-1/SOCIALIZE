@@ -13,6 +13,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useDispatch, useSelector } from "react-redux";
 import { login, reset } from "../features/authSlice";
+import { translate } from "../main";
 
 const Login = () => {
   const theme = useTheme();
@@ -74,12 +75,12 @@ const Login = () => {
         onChange={handleUsername}
         color={validate.username}
         value={info.username}
-        label="username"
+        label={translate("username")}
         required
         size="medium"
         helperText={
           <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-            at least 3 character
+            {translate("at least 3 character")}
           </Typography>
         }
       />
@@ -109,12 +110,12 @@ const Login = () => {
         onChange={handlePassword}
         color={validate.password}
         value={info.password}
-        label="password"
+        label={translate("password")}
         required
         size="medium"
         helperText={
           <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-            at least 8 character
+            {translate("at least 8 character")}
           </Typography>
         }
       />
@@ -150,7 +151,7 @@ const Login = () => {
             color={theme.palette.secondary.dark}
             textTransform={"uppercase"}
           >
-            login
+            {translate("login")}
           </Typography>
           {error && (
             <Typography
@@ -173,7 +174,7 @@ const Login = () => {
               onClick={handleLogin}
               sx={{ ":hover": { bgcolor: theme.palette.primary.main } }}
             >
-              login
+              {translate("login")}
             </Button>
           )}
           <Typography
@@ -188,7 +189,7 @@ const Login = () => {
               navigate("/signup");
             }}
           >
-            don't have an account?
+            {translate("don't have an account?")}
           </Typography>
         </Box>
       </Box>

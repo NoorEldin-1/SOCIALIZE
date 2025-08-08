@@ -37,8 +37,9 @@ class FollowController extends Controller
         }
     }
 
-    public function getFollowers($user_id) {
-        $followers = Follow::where('to_user_id', $user_id)->get()->map(function($follow) {
+    public function getFollowers($username) {
+        $user = User::where('username', $username)->first();
+        $followers = Follow::where('to_user_id', $user->id)->latest("id", "desc")->get()->map(function($follow) {
             return $follow->from_user_id;
         });
 
@@ -52,8 +53,9 @@ class FollowController extends Controller
         return response()->json(['followers' => $users]);
     }
 
-    public function getFollowing($user_id) {
-        $following = Follow::where('from_user_id', $user_id)->get()->map(function($follow) {
+    public function getFollowing($username) {
+        $user = User::where('username', $username)->first();
+        $following = Follow::where('from_user_id', $user->id)->latest("id", "desc")->get()->map(function($follow) {
             return $follow->to_user_id;
         });
 

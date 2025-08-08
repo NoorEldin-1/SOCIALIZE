@@ -22,6 +22,8 @@ import { Slide } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { createPost, reset } from "../features/postSlice";
+import { useNavigate } from "react-router";
+import { translate } from "../main";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -38,6 +40,7 @@ const AddPost = () => {
   });
   const [contentValid, setContentValid] = useState("primary");
   const addPostLoading = useSelector((state) => state.post.addPostLoading);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (addPostLoading === "false") {
@@ -48,8 +51,11 @@ const AddPost = () => {
         image: "",
       });
       setContentValid("primary");
+      navigate("/for-you");
+      navigate("/following");
+      navigate("/");
     }
-  }, [addPostLoading, dispatch]);
+  }, [addPostLoading, dispatch, navigate]);
 
   const handleContentChange = useCallback(
     (e) => {
@@ -78,8 +84,12 @@ const AddPost = () => {
           >
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            add post
+          <Typography
+            sx={{ ml: 2, flex: 1, textTransform: "uppercase" }}
+            variant="h6"
+            component="div"
+          >
+            {translate("add post")}
           </Typography>
           {addPostLoading === "true" ? (
             <CircularProgress
@@ -90,7 +100,7 @@ const AddPost = () => {
             />
           ) : (
             <Button autoFocus color="inherit" onClick={handlePost}>
-              post
+              {translate("post")}
             </Button>
           )}
         </Toolbar>
@@ -104,13 +114,23 @@ const AddPost = () => {
         fullWidth
         multiline
         minRows={6}
-        label="post description"
+        label={translate("post description")}
         color={contentValid}
+        sx={{
+          "& .MuiInputBase-input": {
+            color: theme.palette.primary.light,
+          },
+        }}
         value={post.content}
         onChange={handleContentChange}
       />
     );
-  }, [contentValid, handleContentChange, post.content]);
+  }, [
+    contentValid,
+    handleContentChange,
+    post.content,
+    theme.palette.primary.light,
+  ]);
 
   const image = useMemo(() => {
     return (
@@ -155,7 +175,7 @@ const AddPost = () => {
           endIcon={<FileUploadIcon />}
           onClick={() => fileRef.current.click()}
         >
-          upload image
+          {translate("upload image")}
         </Button>
       </>
     );
@@ -165,19 +185,31 @@ const AddPost = () => {
     return (
       <Dialog
         open={dialog === "addPost"}
+        sx={{
+          "& .MuiDialog-paper": {
+            bgcolor: theme.palette.primary.dark,
+          },
+        }}
         fullScreen
         slots={{
           transition: Transition,
         }}
       >
         {bar}
-        <Box sx={{ p: 2, display: "flex", gap: 1, flexDirection: "column" }}>
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            gap: 1,
+            flexDirection: "column",
+          }}
+        >
           {content}
           {image}
         </Box>
       </Dialog>
     );
-  }, [bar, content, dialog, image]);
+  }, [bar, content, dialog, image, theme.palette.primary.dark]);
 
   return element;
 };

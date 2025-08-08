@@ -30,6 +30,18 @@ class User extends Authenticatable
         return $this->hasMany(Follow::class);
     }
 
+    public function likes() {
+        return $this->hasMany(PostLike::class);
+    }
+
+    public function shares() {
+        return $this->hasMany(PostShare::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(PostComment::class);
+    }
+
     protected $hidden = [
         'password',
     ];
@@ -40,4 +52,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 }

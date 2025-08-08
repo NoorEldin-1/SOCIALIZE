@@ -1,31 +1,48 @@
 import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PostCard from "./PostCard";
+import { followingPosts, nextFollowingPosts } from "../features/postSlice";
+import { translate } from "../main";
 
 const Following = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [list, setList] = useState([]);
-  const [liked, setLiked] = useState(false);
   const posts = useSelector((state) => state.post.followingPosts);
   const loading = useSelector((state) => state.post.followingPostsLoading);
+  const nextPage = useSelector((state) => state.post.nextFollowingPosts);
+  const paginateLoading = useSelector((state) => state.post.paginateLoading);
 
   useEffect(() => {
-    setList(
-      posts.map((e) => {
-        return (
-          <PostCard
-            place="following"
-            e={e}
-            key={e.id}
-            liked={liked}
-            setLiked={setLiked}
-          />
-        );
-      })
-    );
-  }, [dispatch, liked, posts, theme.palette.primary.main]);
+    dispatch(followingPosts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (posts.length > 0 && loading === "false") {
+      setList(
+        posts.map((e) => {
+          return <PostCard place="following" e={e} key={e.id} />;
+        })
+      );
+    }
+  }, [dispatch, loading, posts, theme.palette.primary.main]);
+
+  const handlePaginate = useCallback(() => {
+    if (nextPage && paginateLoading === "false") {
+      if (
+        Math.ceil(window.scrollY + document.documentElement.clientHeight) >=
+        document.documentElement.scrollHeight
+      ) {
+        dispatch(nextFollowingPosts(nextPage));
+      }
+    }
+  }, [dispatch, nextPage, paginateLoading]);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handlePaginate);
+    return () => window.removeEventListener("scroll", handlePaginate);
+  }, [handlePaginate]);
 
   const element = useMemo(() => {
     return (
@@ -43,25 +60,33 @@ const Following = () => {
         {loading === "true" ? (
           <CircularProgress />
         ) : posts.length > 0 ? (
-          <>{list}</>
-        ) : (
+          <>
+            {list}
+            {paginateLoading === "true" && <CircularProgress />}
+          </>
+        ) : paginateLoading === "true" ? null : (
           <Typography
             variant="h6"
-            color={theme.palette.getContrastText(
-              theme.palette.background.default
-            )}
+            color={theme.palette.primary.dark}
             py={1}
             px={5}
-            bgcolor={theme.palette.background.default}
+            bgcolor={theme.palette.primary.light}
             borderRadius={50}
             textTransform={"uppercase"}
           >
-            No posts
+            {translate("no posts")}
           </Typography>
         )}
       </Box>
     );
-  }, [list, loading, posts.length, theme.palette]);
+  }, [
+    list,
+    loading,
+    paginateLoading,
+    posts.length,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+  ]);
 
   return element;
 };

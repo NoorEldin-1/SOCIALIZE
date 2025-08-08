@@ -244,10 +244,10 @@ const authSlice = createSlice({
         window.location.href = "/";
       })
       .addCase(editAccount.pending, (state) => {
-        state.editLoading = true;
+        state.editLoading = "true";
       })
       .addCase(editAccount.fulfilled, (state, action) => {
-        state.editLoading = false;
+        state.editLoading = "false";
 
         state.user = action.payload.user;
         window.localStorage.setItem("name", action.payload.user.name);
@@ -281,10 +281,10 @@ const authSlice = createSlice({
         } else {
           window.localStorage.removeItem("coverImage");
         }
-        window.location.href = "/profile";
+        window.location.href = "/";
       })
       .addCase(editAccount.rejected, (state, action) => {
-        state.editLoading = false;
+        state.editLoading = "false";
         state.editError = action.payload;
       })
       .addCase(getProfile.pending, (state) => {

@@ -14,6 +14,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { useDispatch, useSelector } from "react-redux";
 import { reset, signup } from "../features/authSlice";
+import { translate } from "../main";
 
 const Signup = () => {
   const theme = useTheme();
@@ -118,12 +119,12 @@ const Signup = () => {
         onChange={handleFullName}
         color={validate.fullName}
         value={info.fullName}
-        label="full name"
+        label={translate("full name")}
         required
         size="medium"
         helperText={
           <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-            at least 3 character
+            {translate("at least 3 character")}
           </Typography>
         }
       />
@@ -139,7 +140,7 @@ const Signup = () => {
         onChange={handleUsername}
         color={validate.username}
         value={info.username}
-        label="username"
+        label={translate("username")}
         required
         size="medium"
         helperText={
@@ -153,7 +154,7 @@ const Signup = () => {
             </Typography>
           ) : (
             <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-              at least 3 character
+              {translate("at least 3 character")}
             </Typography>
           )
         }
@@ -170,12 +171,12 @@ const Signup = () => {
         onChange={handlePassword}
         color={validate.password}
         value={info.password}
-        label="password"
+        label={translate("password")}
         required
         size="medium"
         helperText={
           <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-            at least 8 character
+            {translate("at least 8 character")}
           </Typography>
         }
         slotProps={{
@@ -206,12 +207,12 @@ const Signup = () => {
         onChange={handleConfirmPassword}
         color={validate.confirmPassword}
         value={info.confirmPassword}
-        label="confirm password"
+        label={translate("confirm password")}
         required
         size="medium"
         helperText={
           <Typography variant="caption" sx={{ textTransform: "capitalize" }}>
-            at least 8 character
+            {translate("at least 8 character")}
           </Typography>
         }
         slotProps={{
@@ -267,7 +268,7 @@ const Signup = () => {
             color={theme.palette.secondary.dark}
             textTransform={"uppercase"}
           >
-            signup
+            {translate("signup")}
           </Typography>
           <Box
             sx={{
@@ -301,7 +302,7 @@ const Signup = () => {
               onClick={handleSignup}
               sx={{ ":hover": { bgcolor: theme.palette.primary.main } }}
             >
-              signup
+              {translate("signup")}
             </Button>
           )}
           <Typography
@@ -316,7 +317,7 @@ const Signup = () => {
               navigate("/login");
             }}
           >
-            already have an account?
+            {translate("already have an account?")}
           </Typography>
         </Box>
       </Box>

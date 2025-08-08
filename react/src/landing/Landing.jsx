@@ -47,6 +47,9 @@ const Landing = () => {
             mx: "auto",
             fontWeight: "bold",
             borderRadius: "50px",
+            ":hover": {
+              backgroundColor: theme.palette.primary.main,
+            },
           }}
           onClick={() => navigate("/login")}
         >

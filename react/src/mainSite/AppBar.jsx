@@ -2,7 +2,6 @@ import {
   Avatar,
   Box,
   ButtonBase,
-  IconButton,
   Menu,
   MenuItem,
   Typography,
@@ -15,8 +14,7 @@ import { useDispatch } from "react-redux";
 import { showDialog } from "../features/dialogSlice";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import ChatIcon from "@mui/icons-material/Chat";
+import { translate } from "../main";
 
 const AppBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,7 +60,7 @@ const AppBar = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>add post</Typography>
+          <Typography flexGrow={1}>{translate("add post")}</Typography>
           <PostAddIcon />
         </MenuItem>
         <MenuItem
@@ -76,21 +74,7 @@ const AppBar = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>chats</Typography>
-          <ChatIcon />
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            dispatch(showDialog("accountSettings"));
-          }}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-          }}
-        >
-          <Typography flexGrow={1}>account settings</Typography>
+          <Typography flexGrow={1}>{translate("account settings")}</Typography>
           <ManageAccountsIcon />
         </MenuItem>
         <MenuItem
@@ -101,7 +85,7 @@ const AppBar = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>delete account</Typography>
+          <Typography flexGrow={1}>{translate("delete account")}</Typography>
           <DeleteIcon />
         </MenuItem>
         <MenuItem
@@ -112,7 +96,7 @@ const AppBar = () => {
             gap: 1,
           }}
         >
-          <Typography flexGrow={1}>logout</Typography>
+          <Typography flexGrow={1}>{translate("logout")}</Typography>
           <LogoutIcon />
         </MenuItem>
       </Menu>
@@ -154,9 +138,6 @@ const AppBar = () => {
           socialize.
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <IconButton size="large" color="primary">
-            <NotificationsIcon />
-          </IconButton>
           <ButtonBase
             component="label"
             role={undefined}

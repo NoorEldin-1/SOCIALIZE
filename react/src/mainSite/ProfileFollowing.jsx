@@ -1,12 +1,13 @@
 import { Box, CircularProgress, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import ButtonBase from "@mui/material/ButtonBase";
 import Avatar from "@mui/material/Avatar";
 import { useDispatch, useSelector } from "react-redux";
 import { getFollowing } from "../features/followSlice";
+import { translate } from "../main";
 
 const ProfileFollowing = () => {
   const theme = useTheme();
@@ -15,9 +16,15 @@ const ProfileFollowing = () => {
   const dispatch = useDispatch();
   const following = useSelector((state) => state.follow.following);
   const loading = useSelector((state) => state.follow.followingLoading);
+  const { username } = useParams();
+
   useEffect(() => {
-    dispatch(getFollowing(window.localStorage.getItem("userId")));
-  }, [dispatch]);
+    if (username) {
+      dispatch(getFollowing(username));
+    } else {
+      dispatch(getFollowing(window.localStorage.getItem("username")));
+    }
+  }, [dispatch, username]);
 
   useEffect(() => {
     if (following.length > 0) {
@@ -92,7 +99,7 @@ const ProfileFollowing = () => {
                     textTransform={"none"}
                     fontWeight={"bold"}
                   >
-                    @{e.username}
+                    {e.username}
                   </Typography>
                 </Box>
               }
@@ -110,7 +117,7 @@ const ProfileFollowing = () => {
       <Box
         sx={{
           maxWidth: "900px",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.primary.dark,
           borderRadius: 10,
           overflow: "hidden",
           boxShadow: 10,
@@ -135,12 +142,14 @@ const ProfileFollowing = () => {
         ) : (
           <Typography
             variant="h6"
-            color="primary"
-            textAlign={"center"}
-            p={2}
-            alignContent={"center"}
+            color={theme.palette.primary.dark}
+            py={1}
+            px={5}
+            bgcolor={theme.palette.primary.light}
+            borderRadius={50}
+            textTransform={"uppercase"}
           >
-            No following
+            {translate("no following")}
           </Typography>
         )}
       </Box>

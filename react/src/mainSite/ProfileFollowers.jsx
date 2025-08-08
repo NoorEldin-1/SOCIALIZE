@@ -9,12 +9,14 @@ import Avatar from "@mui/material/Avatar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { getFollowers } from "../features/followSlice";
+import { translate } from "../main";
 
 const ProfileFollowers = () => {
   const theme = useTheme();
+  const { username } = useParams();
   const [tabList, setTabList] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,8 +24,12 @@ const ProfileFollowers = () => {
   const loading = useSelector((state) => state.follow.followersLoading);
 
   useEffect(() => {
-    dispatch(getFollowers(window.localStorage.getItem("userId")));
-  }, [dispatch]);
+    if (username) {
+      dispatch(getFollowers(username));
+    } else {
+      dispatch(getFollowers(window.localStorage.getItem("username")));
+    }
+  }, [dispatch, username]);
 
   useEffect(() => {
     if (followers.length > 0) {
@@ -98,7 +104,7 @@ const ProfileFollowers = () => {
                     textTransform={"none"}
                     fontWeight={"bold"}
                   >
-                    @{e.username}
+                    {e.username}
                   </Typography>
                 </Box>
               }
@@ -116,7 +122,7 @@ const ProfileFollowers = () => {
       <Box
         sx={{
           maxWidth: "900px",
-          backgroundColor: theme.palette.background.paper,
+          backgroundColor: theme.palette.primary.dark,
           borderRadius: 10,
           overflow: "hidden",
           boxShadow: 10,
@@ -141,12 +147,14 @@ const ProfileFollowers = () => {
         ) : (
           <Typography
             variant="h6"
-            color="primary"
-            textAlign={"center"}
-            p={2}
-            alignContent={"center"}
+            color={theme.palette.primary.dark}
+            py={1}
+            px={5}
+            bgcolor={theme.palette.primary.light}
+            borderRadius={50}
+            textTransform={"uppercase"}
           >
-            No followers
+            {translate("no followers")}
           </Typography>
         )}
       </Box>

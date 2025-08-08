@@ -24,6 +24,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { editAccount } from "../features/authSlice";
 import { useNavigate } from "react-router";
+import { translate } from "../main";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -51,9 +52,9 @@ const AccountSettings = () => {
   const [coverImageValid, setCoverImageValid] = useState("");
 
   useEffect(() => {
-    if (editLoading === false) {
+    if (editLoading === "false") {
       dispatch(showDialog("no dialog"));
-      navigate("/profile");
+      navigate("/");
     }
   }, [dispatch, editLoading, navigate]);
 
@@ -120,8 +121,12 @@ const AccountSettings = () => {
           >
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            settings
+          <Typography
+            sx={{ ml: 2, flex: 1, textTransform: "uppercase" }}
+            variant="h6"
+            component="div"
+          >
+            {translate("settings")}
           </Typography>
           {editLoading ? (
             <CircularProgress
@@ -137,7 +142,7 @@ const AccountSettings = () => {
                 handleChange();
               }}
             >
-              change
+              {translate("change")}
             </Button>
           )}
         </Toolbar>
@@ -149,13 +154,14 @@ const AccountSettings = () => {
     return (
       <TextField
         fullWidth
-        label="full name"
+        label={translate("full name")}
+        sx={{ "& .MuiInputBase-input": { color: theme.palette.primary.light } }}
         color={nameValid}
         value={info.name}
         onChange={handleNameChange}
       />
     );
-  }, [handleNameChange, info.name, nameValid]);
+  }, [handleNameChange, info.name, nameValid, theme.palette.primary.light]);
 
   const imagesInput = useMemo(() => {
     return (
@@ -182,20 +188,60 @@ const AccountSettings = () => {
     return (
       <Box sx={{ display: "flex", gap: 2 }}>
         {info.profileImage && profileImageValid === true && (
-          <img
-            src={URL.createObjectURL(info.profileImage)}
-            style={{ width: "100px", height: "100px", objectFit: "cover" }}
-          />
+          <Box
+            sx={{
+              width: "fit-content",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexDirection: "column",
+            }}
+          >
+            <img
+              src={URL.createObjectURL(info.profileImage)}
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+            />
+            <IconButton
+              size="large"
+              color="primary"
+              onClick={() => {
+                setInfo({ ...info, profileImage: "" });
+                profileImageRef.current.value = "";
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
         )}
         {info.coverImage && coverImageValid === true && (
-          <img
-            src={URL.createObjectURL(info.coverImage)}
-            style={{ width: "100px", height: "100px", objectFit: "cover" }}
-          />
+          <Box
+            sx={{
+              width: "fit-content",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexDirection: "column",
+            }}
+          >
+            <img
+              src={URL.createObjectURL(info.coverImage)}
+              style={{ width: "100px", height: "100px", objectFit: "cover" }}
+            />
+            <IconButton
+              size="large"
+              color="primary"
+              onClick={() => {
+                setInfo({ ...info, coverImage: "" });
+                coverImageRef.current.value = "";
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
         )}
       </Box>
     );
-  }, [coverImageValid, info.coverImage, info.profileImage, profileImageValid]);
+  }, [coverImageValid, info, profileImageValid]);
 
   const handleUpload = useMemo(() => {
     return (
@@ -212,20 +258,30 @@ const AccountSettings = () => {
           variant="contained"
           endIcon={<FileUploadIcon />}
           onClick={() => profileImageRef.current.click()}
+          sx={{
+            ":hover": {
+              backgroundColor: theme.palette.primary.main,
+            },
+          }}
         >
-          change profile image
+          {translate("change profile image")}
         </Button>
         <Button
           fullWidth
           variant="contained"
           endIcon={<FileUploadIcon />}
           onClick={() => coverImageRef.current.click()}
+          sx={{
+            ":hover": {
+              backgroundColor: theme.palette.primary.main,
+            },
+          }}
         >
-          change cover image
+          {translate("change cover image")}
         </Button>
       </Box>
     );
-  }, []);
+  }, [theme.palette.primary.main]);
 
   const switches = useMemo(() => {
     const label = { inputProps: { "aria-label": "Switch demo" } };
@@ -246,6 +302,7 @@ const AccountSettings = () => {
               cursor: "pointer",
               textTransform: "capitalize",
               fontWeight: "bold",
+              color: theme.palette.primary.light,
             }}
             onClick={() =>
               setInfo((prev) => ({
@@ -254,7 +311,7 @@ const AccountSettings = () => {
               }))
             }
           >
-            show likes
+            {translate("show likes")}
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -275,6 +332,7 @@ const AccountSettings = () => {
               cursor: "pointer",
               textTransform: "capitalize",
               fontWeight: "bold",
+              color: theme.palette.primary.light,
             }}
             onClick={() =>
               setInfo((prev) => ({
@@ -283,7 +341,7 @@ const AccountSettings = () => {
               }))
             }
           >
-            show shares
+            {translate("show shares")}
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -304,6 +362,7 @@ const AccountSettings = () => {
               cursor: "pointer",
               textTransform: "capitalize",
               fontWeight: "bold",
+              color: theme.palette.primary.light,
             }}
             onClick={() =>
               setInfo((prev) => ({
@@ -314,7 +373,7 @@ const AccountSettings = () => {
               }))
             }
           >
-            show followers
+            {translate("show followers")}
           </Typography>
         </Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -335,6 +394,7 @@ const AccountSettings = () => {
               cursor: "pointer",
               textTransform: "capitalize",
               fontWeight: "bold",
+              color: theme.palette.primary.light,
             }}
             onClick={() =>
               setInfo((prev) => ({
@@ -345,17 +405,28 @@ const AccountSettings = () => {
               }))
             }
           >
-            show following
+            {translate("show following")}
           </Typography>
         </Box>
       </Box>
     );
-  }, [info.showFollowers, info.showFollowing, info.showLikes, info.showShares]);
+  }, [
+    info.showFollowers,
+    info.showFollowing,
+    info.showLikes,
+    info.showShares,
+    theme.palette.primary.light,
+  ]);
 
   const element = useMemo(() => {
     return (
       <Dialog
         fullScreen
+        sx={{
+          "& .MuiDialog-paper": {
+            backgroundColor: theme.palette.primary.dark,
+          },
+        }}
         open={dialog === "accountSettings"}
         slots={{
           transition: Transition,
@@ -371,7 +442,16 @@ const AccountSettings = () => {
         </Box>
       </Dialog>
     );
-  }, [bar, dialog, handleUpload, imagesInput, showImages, switches, textField]);
+  }, [
+    bar,
+    dialog,
+    handleUpload,
+    imagesInput,
+    showImages,
+    switches,
+    textField,
+    theme.palette.primary.dark,
+  ]);
 
   return element;
 };

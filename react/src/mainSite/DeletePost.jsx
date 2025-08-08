@@ -9,14 +9,17 @@ import {
   DialogActions,
   Button,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 import { deletePost, reset } from "../features/postSlice";
+import { translate } from "../main";
 
 const DeletePost = () => {
   const dispatch = useDispatch();
   const dialog = useSelector((state) => state.dialog);
   const loading = useSelector((state) => state.post.deletePostLoading);
   const postInfo = useSelector((state) => state.post.postInfo);
+  const theme = useTheme();
   useEffect(() => {
     if (loading === "false") {
       dispatch(showDialog("no dialog"));
@@ -30,14 +33,30 @@ const DeletePost = () => {
 
   const element = useMemo(() => {
     return (
-      <Dialog open={dialog === "delete post"}>
-        <DialogTitle align="center" textTransform={"uppercase"}>
-          delete post
+      <Dialog
+        open={dialog === "delete post"}
+        sx={{
+          "& .MuiDialog-paper": {
+            backgroundColor: theme.palette.primary.dark,
+          },
+        }}
+      >
+        <DialogTitle
+          align="center"
+          textTransform={"uppercase"}
+          color={theme.palette.primary.light}
+        >
+          {translate("delete post")}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText textTransform={"capitalize"} align="center">
-            are you sure you want to delete this post forever? if yes click
-            delete, if no click cancel.
+          <DialogContentText
+            textTransform={"capitalize"}
+            align="center"
+            color={theme.palette.primary.light}
+          >
+            {translate(
+              "are you sure you want to delete this post forever? if yes click delete, if no click cancel."
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -49,17 +68,24 @@ const DeletePost = () => {
                 variant="outlined"
                 onClick={() => dispatch(showDialog("no dialog"))}
               >
-                cancel
+                {translate("cancel")}
               </Button>
               <Button variant="outlined" color="error" onClick={handleDelete}>
-                delete
+                {translate("delete")}
               </Button>
             </>
           )}
         </DialogActions>
       </Dialog>
     );
-  }, [dialog, dispatch, handleDelete, loading]);
+  }, [
+    dialog,
+    dispatch,
+    handleDelete,
+    loading,
+    theme.palette.primary.dark,
+    theme.palette.primary.light,
+  ]);
 
   return element;
 };

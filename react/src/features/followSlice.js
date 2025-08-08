@@ -2,41 +2,33 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { backendUrl, fileUrl } from "../main";
 
-let followTimeout;
 export const follow = createAsyncThunk("follow/follow", async ({ info }) => {
-  console.log(info);
 
-  if (followTimeout) {
-    clearTimeout(followTimeout);
+
+  if (info.isFollow === "UN FOLLOW" || info.isFollow === "إلغاء المتابعة") {
+    const res = await axios.post(
+      `${backendUrl}addFollow/${info.fromUserId}/${info.toUserId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    return res.data;
+  } else {
+    const res = await axios.delete(
+      `${backendUrl}deleteFollow/${info.fromUserId}/${info.toUserId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    return res.data;
   }
-
-  followTimeout = setTimeout(async () => {
-    console.log("timeout");
-    if (info.isFollow === "UN FOLLOW") {
-      const res = await axios.post(
-        `${backendUrl}addFollow/${info.fromUserId}/${info.toUserId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log(res.data);
-      return res.data;
-    } else {
-      const res = await axios.delete(
-        `${backendUrl}deleteFollow/${info.fromUserId}/${info.toUserId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log(res.data);
-      return res.data;
-    }
-  }, 2000);
 });
 
 export const getFollow = createAsyncThunk(
@@ -56,8 +48,8 @@ export const getFollow = createAsyncThunk(
 
 export const getFollowers = createAsyncThunk(
   "follow/getFollowers",
-  async (userId) => {
-    const res = await axios.get(`${backendUrl}getFollowers/${userId}`, {
+  async (username) => {
+    const res = await axios.get(`${backendUrl}getFollowers/${username}`, {
       headers: {
         Authorization: `Bearer ${window.localStorage.getItem("token")}`,
       },
@@ -68,8 +60,8 @@ export const getFollowers = createAsyncThunk(
 
 export const getFollowing = createAsyncThunk(
   "follow/getFollowing",
-  async (userId) => {
-    const res = await axios.get(`${backendUrl}getFollowing/${userId}`, {
+  async (username) => {
+    const res = await axios.get(`${backendUrl}getFollowing/${username}`, {
       headers: {
         Authorization: `Bearer ${window.localStorage.getItem("token")}`,
       },
@@ -103,6 +95,7 @@ const followSlice = createSlice({
       })
 
       .addCase(getFollowers.fulfilled, (state, action) => {
+
         state.followersLoading = "false";
         if (action.payload.followers.length > 0) {
           action.payload.followers.map((e) => {
@@ -123,6 +116,7 @@ const followSlice = createSlice({
         state.followingLoading = "true";
       })
       .addCase(getFollowing.fulfilled, (state, action) => {
+
         state.followingLoading = "false";
         if (action.payload.following.length > 0) {
           action.payload.following.map((e) => {
